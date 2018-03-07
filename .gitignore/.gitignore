@@ -1,0 +1,108 @@
+data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)
+df <- data[-1]
+df$is_trade <- factor(df$is_trade,levels=c(0,1),labels=c("NO","YES"))
+df <- df[c(-1,-10,-15,-19)]
+b=as.vector(df$item_category_list)
+name1 <- strsplit(b,split=";")
+iclcategory_0 <- sapply(name1,"[",1)
+iclcategory_1 <- sapply(name1,"[",2)
+iclcategory_2 <- sapply(name1,"[",3)
+df <- cbind(iclcategory_0,iclcategory_1,iclcategory_2,df[,-1])
+
+c=as.vector(df$item_property_list)
+name2 <- strsplit(c,split=";")
+iplproperty_0 <- sapply(name2,"[",1)
+iplproperty_1 <- sapply(name2,"[",2)
+iplproperty_2 <- sapply(name2,"[",3)
+df2 <- cbind(iplproperty_0,iplproperty_1,iplproperty_2,df[,-4])
+
+d=as.vector(df$predict_category_property)
+name3 <- strsplit(d,split=";")
+pcpcategory_A <- sapply(name3,"[",1)
+pcpcategory_B <- sapply(name3,"[",2)
+pcpcategory_C <- sapply(name3,"[",3)
+df3 <- cbind(pcpcategory_A,pcpcategory_B,pcpcategory_C,df2[,-19])
+
+df4 <- df3[c(-7)]
+
+
+e=as.vector(df3$pcpcategory_A)
+name4 <- strsplit(e,split=":")
+pcpcategory_A_1 <- sapply(name4,"[",1)
+pcpcategory_A_2 <- sapply(name4,"[",2)
+df5 <- cbind(pcpcategory_A_1,pcpcategory_A_2,df4[,-1])
+
+f=as.vector(df3$pcpcategory_B)
+name5 <- strsplit(f,split=":")
+pcpcategory_B_1 <- sapply(name5,"[",1)
+pcpcategory_B_2 <- sapply(name5,"[",2)
+df6 <- cbind(pcpcategory_B_1,pcpcategory_B_2,df5[,-3])
+
+g=as.vector(df3$pcpcategory_C)
+name6 <- strsplit(g,split=":")
+pcpcategory_C_1 <- sapply(name6,"[",1)
+pcpcategory_C_2 <- sapply(name6,"[",2)
+df7 <- cbind(pcpcategory_C_1,pcpcategory_C_2,df6[,-5])
+
+item_brand_id <- as.character(df7$item_brand_id)
+item_city_id <- as.character(df$item_city_id)
+df8 <- cbind(item_brand_id,item_city_id,df7)
+head(df8)
+df9 <- df8[c(-14,-15)]
+
+df10 <- df9[c(-13)]
+
+df10[df10==-1] <- NA
+
+dfuser <- df10[,c(17,18,19,20,29)]
+dfuserna <- na.omit(dfuser)
+fit.full <- glm(is_trade ~ .,data=dfuserna,family=binomial)
+summary(fit.full)
+
+
+dfshop <-df10[,c(23:29)]
+dfshopna <- na.omit(dfshop)
+fit.full2 <- glm(is_trade ~ .,data=dfshopna,family=binomial)
+summary(fit.full2)
+
+
+newdate <- as.POSIXct(df10$context_timestamp, origin="1970-01-01 00:00:00")
+df11 <- df10[,c(-21)]
+df12 <- cbind(df11,newdate)
+
+contextday <- day(newdate)
+contextwday <- wday(newdate)
+contexthour <- hour(newdate)
+contextminute <- minute(newdate)
+contextsecond <- second(newdate)
+
+df13 <- cbind(df12,contextday,contextwday,contexthour,contextminute,contextsecond)
+df14 <- df13[c(-29)]
+
+dftime <-df14[,c(28:33)]
+dftimena <- na.omit(dftime)
+fit.full3 <- glm(is_trade ~ .,data=dftimena,family=binomial)
+summary(fit.full3)
+
+dfeasy <-df14[,c(13:33)]
+dfeasyna <- na.omit(dfeasy)
+fit.full4 <- glm(is_trade ~ .,data=dfeasyna,family=binomial)
+summary(fit.full4)
+
+set.seed(1234)
+train <- sample(nrow(dfeasyna),0.7*nrow(dfeasyna))
+df.train <- dfeasyna[train,]
+df.validate <- dfeasyna[-train,]
+table(df.train$is_trade)
+table(df.validate$is_trade)
+
+fit.logit <- glm(is_trade~.,data = df.train,family=binomial())
+summary(fit.logit)
+
+prob <- predict(fit.logit,df.validate,type="response")
+logit.pred <- factor(prob>.05,levels=c(FALSE,TRUE),labels=c("NO","YES"))
+logit.perf <- table(df.validate$is_trade,logit.pred,dnn=c("Actual","Predicted"))
+logit.perf
+
+这个模型：95.51
+没有使用几个复杂的变量
