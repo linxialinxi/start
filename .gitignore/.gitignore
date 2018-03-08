@@ -70,6 +70,7 @@ newdate <- as.POSIXct(df10$context_timestamp, origin="1970-01-01 00:00:00")
 df11 <- df10[,c(-21)]
 df12 <- cbind(df11,newdate)
 
+library(lubridate)
 contextday <- day(newdate)
 contextwday <- wday(newdate)
 contexthour <- hour(newdate)
