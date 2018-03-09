@@ -118,4 +118,10 @@ data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)'导入数据
 d1 <-data[!duplicated(data$instance_id),]'根据样本id去除重复数据
 d1[d1==-1] <- NA'把数据里面的-1值标注成NA以便统计
 describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值，分类，最大最小值等
+结果：27  Variables      478087  Observations
+      27个变量，478087个不重复观测值
+      
+其中变量instance_id和context_id各有478087个不同的值，说明这就是编号属性，所以可以剔除
+至于item_id,user_id,shop_id值没有那么多，所以看看这三个id对应的各属性的训练值和测试值是否一致，如果一致，仍然可以剔除
 
+任务：确定这三个id值是否可剔除
