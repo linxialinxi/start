@@ -125,3 +125,8 @@ describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值�
 至于item_id,user_id,shop_id值没有那么多，所以看看这三个id对应的各属性的训练值和测试值是否一致，如果一致，仍然可以剔除
 
 任务：确定这三个id值是否可剔除
+d2 <- d1[c(2:10)]'提取广告商品信息进行辨别
+describe(d2)
+d22<-unique(d2)
+describe(d22)
+data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
