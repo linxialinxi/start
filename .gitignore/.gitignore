@@ -147,9 +147,9 @@ d3 <- d1[!d2]
 拆分（item_category_list/predict_category_property/item_property_list）
 a=as.vector(d3$item_category_list)
 name1 <- strsplit(a,split=";")
-iclcategory_0 <- sapply(name1,"[",1)
-iclcategory_1 <- sapply(name1,"[",2)
-iclcategory_2 <- sapply(name1,"[",3)
+iclcategory_1 <- sapply(name1,"[",1)
+iclcategory_2 <- sapply(name1,"[",2)
+iclcategory_3 <- sapply(name1,"[",3)
 d4 <- cbind(iclcategory_0,iclcategory_1,iclcategory_2,d3[,-1])
 
 b=as.vector(d4$predict_category_property)
@@ -187,9 +187,7 @@ d4 <- cbind(pcpcategory_C1,pcpcategory_C2,d4[,-8])
 
 d4[d4==-1] <- NA
 
-此时得到31个变量，其中iclcategory_0全部是7908382889764677758，删除
-iclcategory_2缺失值476058，占样本比例太高，删除
-
+此时得到31个变量，其中iclcategory_1全部是7908382889764677758，删除
 d5 <- names(d4) %in% c("iclcategory_0","iclcategory_2")
 d5 <- d4[!d5]
 
