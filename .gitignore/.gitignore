@@ -1,3 +1,5 @@
+----------18.3.7更新----------
+'先用广义逻辑回归进行一个简单建模，由于运算限制，去除了几个id属性和长变量，但是最终结果不理想
 data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)
 df <- data[-1]
 df$is_trade <- factor(df$is_trade,levels=c(0,1),labels=c("NO","YES"))
@@ -106,9 +108,6 @@ logit.perf <- table(df.validate$is_trade,logit.pred,dnn=c("Actual","Predicted"))
 logit.perf
 
 这个模型：95.51
-没有使用几个复杂的变量
-
-
 
 
 ----------18.3.9更新----------
@@ -122,7 +121,7 @@ describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值�
       27个变量，478087个不重复观测值
       
 其中变量instance_id和context_id各有478087个不同的值，说明这就是编号属性，所以可以剔除
-至于item_id,user_id,shop_id值没有那么多，所以看看这三个id对应的各属性的训练值和测试值是否一致，如果一致，仍然可以剔除
+至于item_id,user_id,shop_id值没有那么多，所以看看这三个id对应的各属性值是否一致，如果一致，仍然可以剔除
 
 任务：确定这三个id值是否可剔除
 '提取广告商品信息进行辨别
@@ -139,3 +138,5 @@ d2 <- names(d1) %in% c("instance_id","item_id","user_id","context_id","shop_id")
 d3 <- d1[!d2]
 describe(d3)
 现在只剩下22个变量 其中，一个因变量is_trade
+
+任务：处理na值，即missing值。（比赛简介有说-1是NA值，在3.9日我已经把-1全部变成了NA值）
