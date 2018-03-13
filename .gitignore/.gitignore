@@ -1,5 +1,5 @@
 ----------18.3.7更新----------
-'先用广义逻辑回归进行一个简单建模，由于运算限制，去除了几个id属性和长变量，但是最终结果不理想
+可忽略：'先用广义逻辑回归进行一个简单建模，由于运算限制，去除了几个id属性和长变量，但是最终结果不理想
 data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)
 df <- data[-1]
 df$is_trade <- factor(df$is_trade,levels=c(0,1),labels=c("NO","YES"))
