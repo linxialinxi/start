@@ -130,7 +130,7 @@ describe(d2)
 d22<-unique(d2)
 describe(d22)
 data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
-
+data1[data1==-1] <- NA
 ----------18.3.13更新----------
 确定其他三个id值都可以删除，因为他们对应的具体属性会有变化，所以id值不必参与建模
 '丢弃五个id变量
@@ -140,3 +140,9 @@ describe(d3)
 现在只剩下22个变量 其中，一个因变量is_trade
 
 任务：处理na值，即missing值。（比赛简介有说-1是NA值，在3.9日我已经把-1全部变成了NA值）
+d4 <- d3[!complete.cases(d3),]
+library(mice)
+d5 <- md.pattern(d4)
+data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
+data1[data1==-1] <- NA
+data <- md.pattern(d4)
