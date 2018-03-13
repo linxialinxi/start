@@ -112,11 +112,11 @@ logit.perf
 
 ----------18.3.9更新----------
 觉得应该要先把数据整理清楚   summary()   library(Hmisc)  describe()
+'导入数据--'根据样本id去除重复数据--'把数据里面的-1值标注成NA以便统计--'进行统计描述，查看各个变量的统计描述，缺失值，分类，最大最小值等
+data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)
+d1 <-data[!duplicated(data$instance_id),]
+d1[d1==-1] <- NA
 
-data<-read.table("round1_ijcai_18_train_20180301.txt",header=T)'导入数据
-d1 <-data[!duplicated(data$instance_id),]'根据样本id去除重复数据
-d1[d1==-1] <- NA'把数据里面的-1值标注成NA以便统计
-describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值，分类，最大最小值等
 结果：27  Variables      478087  Observations
       27个变量，478087个不重复观测值
       
@@ -125,24 +125,82 @@ describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值�
 
 任务：确定这三个id值是否可剔除
 '提取广告商品信息进行辨别
-d2 <- d1[c(2:10)]
-describe(d2)
-d22<-unique(d2)
-describe(d22)
-data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
-data1[data1==-1] <- NA
+                d2 <- d1[c(2:10)]
+                describe(d2)
+                d22<-unique(d2)
+                describe(d22)
+
+
 ----------18.3.13更新----------
 确定其他三个id值都可以删除，因为他们对应的具体属性会有变化，所以id值不必参与建模
 '丢弃五个id变量
 d2 <- names(d1) %in% c("instance_id","item_id","user_id","context_id","shop_id")
 d3 <- d1[!d2]
-describe(d3)
+
 现在只剩下22个变量 其中，一个因变量is_trade
 
-任务：处理na值，即missing值。（比赛简介有说-1是NA值，在3.9日我已经把-1全部变成了NA值）
+任务：
+1.把几个长变量分列成几个小的属性
+2.处理na值，即missing值。（比赛简介有说-1是NA值，在3.9日我已经把-1全部变成了NA值）
+
+1.
+拆分（item_category_list/predict_category_property/item_property_list）
+a=as.vector(d3$item_category_list)
+name1 <- strsplit(a,split=";")
+iclcategory_0 <- sapply(name1,"[",1)
+iclcategory_1 <- sapply(name1,"[",2)
+iclcategory_2 <- sapply(name1,"[",3)
+d4 <- cbind(iclcategory_0,iclcategory_1,iclcategory_2,d3[,-1])
+
+b=as.vector(d4$predict_category_property)
+name2 <- strsplit(b,split=";")
+pcpcategory_A <- sapply(name2,"[",1)
+pcpcategory_B <- sapply(name2,"[",2)
+pcpcategory_C <- sapply(name2,"[",3)
+d4 <- cbind(pcpcategory_A,pcpcategory_B,pcpcategory_C,d4[,-17])
+
+c=as.vector(d4$item_property_list)
+name3 <- strsplit(c,split=";")
+iplproperty_0 <- sapply(name3,"[",1)
+iplproperty_1 <- sapply(name3,"[",2)
+iplproperty_2 <- sapply(name3,"[",3)
+d4 <- cbind(iplproperty_0,iplproperty_1,iplproperty_2,d4[,-7])
+
+d=as.vector(d4$pcpcategory_A)
+name4 <- strsplit(d,split=":")
+pcpcategory_A1 <- sapply(name4,"[",1)
+pcpcategory_A2 <- sapply(name4,"[",2)
+d4 <- cbind(pcpcategory_A1,pcpcategory_A2,d4[,-4])
+
+e=as.vector(d4$pcpcategory_B)
+name5 <- strsplit(e,split=":")
+pcpcategory_B1 <- sapply(name5,"[",1)
+pcpcategory_B2 <- sapply(name5,"[",2)
+d4 <- cbind(pcpcategory_B1,pcpcategory_B2,d4[,-6])
+
+
+f=as.vector(d4$pcpcategory_C)
+name6 <- strsplit(f,split=":")
+pcpcategory_C1 <- sapply(name6,"[",1)
+pcpcategory_C2 <- sapply(name6,"[",2)
+d4 <- cbind(pcpcategory_C1,pcpcategory_C2,d4[,-8])
+
+d4[d4==-1] <- NA
+
+此时得到31个变量，其中iclcategory_0全部是7908382889764677758，删除
+iclcategory_2缺失值476058，占样本比例太高，删除
+
+d5 <- names(d4) %in% c("iclcategory_0","iclcategory_2")
+d5 <- d4[!d5]
+
+
+
+
+
 d4 <- d3[!complete.cases(d3),]
 library(mice)
-d5 <- md.pattern(d4)
+md.pattern(d4)
 data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
 data1[data1==-1] <- NA
-data <- md.pattern(d4)
+md.pattern(data1)
+
