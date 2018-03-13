@@ -125,8 +125,17 @@ describe(d1)'进行统计描述，查看各个变量的统计描述，缺失值�
 至于item_id,user_id,shop_id值没有那么多，所以看看这三个id对应的各属性的训练值和测试值是否一致，如果一致，仍然可以剔除
 
 任务：确定这三个id值是否可剔除
-d2 <- d1[c(2:10)]'提取广告商品信息进行辨别
+'提取广告商品信息进行辨别
+d2 <- d1[c(2:10)]
 describe(d2)
 d22<-unique(d2)
 describe(d22)
 data1<-read.table("round1_ijcai_18_test_a_20180301.txt",header=T)
+
+----------18.3.13更新----------
+确定其他三个id值都可以删除，因为他们对应的具体属性会有变化，所以id值不必参与建模
+'丢弃五个id变量
+d2 <- names(d1) %in% c("instance_id","item_id","user_id","context_id","shop_id")
+d3 <- d1[!d2]
+describe(d3)
+现在只剩下22个变量 其中，一个因变量is_trade
