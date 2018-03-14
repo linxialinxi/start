@@ -16,7 +16,7 @@ name2 <- strsplit(c,split=";")
 iplproperty_0 <- sapply(name2,"[",1)
 iplproperty_1 <- sapply(name2,"[",2)
 iplproperty_2 <- sapply(name2,"[",3)
-df2 <- cbind(iplproperty_0,iplproperty_1,iplproperty_2,df[,-4])
+df2 <- cbind(iplproperty_1,iplproperty_2,iplproperty_3,df[,-4])
 
 d=as.vector(df$predict_category_property)
 name3 <- strsplit(d,split=";")
@@ -150,7 +150,7 @@ name1 <- strsplit(a,split=";")
 iclcategory_1 <- sapply(name1,"[",1)
 iclcategory_2 <- sapply(name1,"[",2)
 iclcategory_3 <- sapply(name1,"[",3)
-d4 <- cbind(iclcategory_0,iclcategory_1,iclcategory_2,d3[,-1])
+d4 <- cbind(iclcategory_1,iclcategory_2,iclcategory_3,d3[,-1])
 
 b=as.vector(d4$predict_category_property)
 name2 <- strsplit(b,split=";")
@@ -188,6 +188,7 @@ d4 <- cbind(pcpcategory_C1,pcpcategory_C2,d4[,-8])
 d4[d4==-1] <- NA
 
 此时得到31个变量，其中iclcategory_1全部是7908382889764677758，删除
+library(Hmisc)
 d5 <- names(d4) %in% c("iclcategory_0","iclcategory_2")
 d5 <- d4[!d5]
 
